@@ -1,0 +1,27 @@
+{
+  "name": "snapshoot",
+  "version": "0.0.1",
+  "license": "Apache-2.0",
+  "description": "website snapshot server",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gbaudhuin/whatsbehind_api"
+  },
+  "scripts": {
+    "lint": "./node_modules/.bin/eslint ./ --ext js --fix",
+    "start": "node src/index.js"
+  },
+  "author": "Guillaume Baudhuin",
+  "dependencies": {
+    "empty-dir": "^1.0.0",
+    "fs-extra": "^7.0.0",
+    "md5": "^2.2.1",
+    "puppeteer": "^1.8.0",
+    "querystring": "^0.2.0",
+    "request": "^2.88.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.6.0"
+  }
+}
