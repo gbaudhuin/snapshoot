@@ -79,7 +79,7 @@ let a = async () => {
     await pageDesktop.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36')
     await pageDesktop.setViewport({width: 1280, height: 1024, isMobile: false, hasTouch: false})
     await pageDesktop.goto(url, {waitUntil: 'domcontentloaded', timeout: 300000})
-    await timeout(1000) // donne le temps à la page et à ses images de se charger
+    await timeout(500) // donne le temps à la page et à ses images de se charger
 
     await pageDesktop.screenshot({path: filepath})
     await pageDesktop.close()
