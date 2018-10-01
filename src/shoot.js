@@ -4,6 +4,7 @@ const fs = require('fs-extra')
 const emptyDir = require('empty-dir')
 const puppeteer = require('puppeteer')
 const md5 = require('md5')
+const config = require('./config');
 
 module.exports.imgFolder = 'public/img'
 
@@ -16,7 +17,7 @@ let getFilename = (url, width, height) => {
 module.exports.getFilename = getFilename
 
 let getDir = (snapshotFilename) => {
-  const screenshotPath = module.exports.imgFolder + '/' + snapshotFilename.substring(0, 2) + '/' + snapshotFilename.substring(2, 4)
+  const screenshotPath = snapshotFilename.substring(0, 2) + '/' + snapshotFilename.substring(2, 4)
   return screenshotPath
 }
 
@@ -34,22 +35,23 @@ module.exports.shoot = function (url, width, height) {
   if (width === undefined) width = 1920
   if (height === undefined) height = 1080
   const screenshotName = getFilename(url.href, width, height)
-  const screenshotDir = getDir(screenshotName)
-  const screenshotPath = screenshotDir + '/' + screenshotName
+  const screenshotPath = config.imgdir + '/' + getDir(screenshotName) + '/' + screenshotName
+  const screenshotShortPath = getDir(screenshotName) + '/' + screenshotName
+
   if (fs.existsSync(screenshotPath)) {
     let stat = fs.statSync(screenshotPath)
-    return {path : screenshotPath, status : 'complete', date : stat.mtime}
+    return {path : screenshotPath, shortpath : screenshotShortPath, status : 'complete', date : stat.mtime}
   } else {
     for (let elt in list)
     {
-      if (elt.url === url) return {path : screenshotPath, status : 'pending', date : null}
+      if (elt.url === url) return {path : screenshotPath, shortpath : screenshotShortPath, status : 'pending', date : null}
     }
   }
   list.push({url : url.href, screenshotPath})
   if (list.length === 1) {
     a()
   }
-  return {path : screenshotPath, status : 'pending', date : null}
+  return {path : screenshotPath, shortpath : screenshotShortPath, status : 'pending', date : null}
 }
 
 let a = async () => {

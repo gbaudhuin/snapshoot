@@ -19,43 +19,53 @@ let server = http.createServer((req, res) => {
   }
 
   let uri = url.parse(req.url, true)
-
+  let pathNameLower = uri.pathname.toLowerCase();
   if (uri.pathname.startsWith('/shoot/')) {
-    let userUrl = decodeURI(uri.pathname.substring(7))
+    let userUrl = decodeURIComponent(uri.pathname.substring(7))
     let userUri = uri.parse(userUrl, true)
     checkAndShoot(res, userUri)
-  } else if (uri.pathname.endsWith('.ico') || uri.pathname.endsWith('.gif') || uri.pathname.endsWith('.jpg') || uri.pathname.endsWith('.png')) {
-    let filepath = './public' + uri.pathname;
-    console.log("Envoi fichier " + filepath)
-    if (fs.existsSync(filepath) === true){
-      
-      var img = fs.readFileSync(filepath);
-
-      if (uri.pathname.endsWith('.ico')) res.writeHead(200, {'Content-Type': 'image/ico' });
-      if (uri.pathname.endsWith('.gif')) res.writeHead(200, {'Content-Type': 'image/gif' });
-      if (uri.pathname.endsWith('.jpg')) res.writeHead(200, {'Content-Type': 'image/jpg' });
-      if (uri.pathname.endsWith('.png')) res.writeHead(200, {'Content-Type': 'image/png' });
-
-      res.end(img, 'binary');
-    } else {
-      console.log("404. Demande fichier inexistant : " + filepath)
-      return helper.fatalError(res, 404, 'Invalid request. Path is invalid.')
-    }
-  } else {
+  } else if (uri.pathname == '/') {
+    
     fs.readFile('public/index.html', 'utf8', function(err, text) {
       res.statusCode = 400;
       res.setHeader('Content-Type', 'text/html');
       res.end(text);
     });
+  } else { // fichiers
+    let allowedExtensions = ['ico', 'gif', 'jpg', 'png'];
+    let isAllowed = false;
+    let extension = null;
+    for (let ext of allowedExtensions) {
+      if (pathNameLower.endsWith('.' + ext)) {
+        extension = ext;
+        isAllowed = true;
+        break;
+      }
+    }
+
+    if (!!isAllowed) {
+      let filepath = './public' + uri.pathname; // les fichiers sont dans public
+      if (fs.existsSync(filepath) === true) {
+        var img = fs.readFileSync(filepath);
+        res.writeHead(200, {'Content-Type': 'image/' + extension });
+        res.end(img, 'binary');
+      } else {
+        console.log("404. Demande fichier inexistant : " + uri.pathname)
+        return helper.fatalError(res, 404, 'Invalid request. Path is invalid.')
+      }
+    } else {
+      console.log("404. Demande fichier inexistant : " + uri.pathname)
+      return helper.fatalError(res, 404, 'Invalid request. Path is invalid.')
+    }
   }
 })
 server.listen(3033)
 
 let checkAndShoot = (res, shootUri) => {
-  let hostname = shootUri.hostname
-  console.log('shoot ' + shootUri.href)
+  let href = decodeURI(shootUri.href)
+  console.log('shoot ' + href)
 
-  request(shootUri.href, (error, response, body) => {
+  request(href, (error, response, body) => {
     if (error) {
       res.statusCode = 400;
       res.setHeader('Content-Type', 'text/plain');
@@ -64,8 +74,12 @@ let checkAndShoot = (res, shootUri) => {
       let data = shoot.shoot(shootUri, 1920, 1080);
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
-      data.url = data.path.substring(6) // enleve 'public'
-      res.end(JSON.stringify(data));
+      let ret = {
+        status : data.status,
+        data : data.date,
+        url : "/" + data.shortpath
+      }
+      res.end(JSON.stringify(ret));
     }
   });
 }

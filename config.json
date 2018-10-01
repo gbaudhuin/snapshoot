@@ -1,5 +1,6 @@
 {
   "dev" : {
+    "imgdir" : "E:/xampp/htdocs/yuz/public/wp-content/plugins/peoleo-screenshot/dyn",
     "logdir" : "./log",
     "whitelist" : [
       "127.0.0.1",
@@ -7,6 +8,7 @@
     ]
   },
   "prod" : {
+    "imgdir" : "/var/www/html/yuz/public/wp-content/plugins/peoleo-screenshot/dyn",
     "logdir" : "./log",
     "whitelist" : [
       "127.0.0.1",
