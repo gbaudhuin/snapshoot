@@ -25,7 +25,6 @@ let server = http.createServer((req, res) => {
     let userUri = uri.parse(userUrl, true)
     checkAndShoot(res, userUri)
   } else if (uri.pathname == '/') {
-    
     fs.readFile('public/index.html', 'utf8', function(err, text) {
       res.statusCode = 400;
       res.setHeader('Content-Type', 'text/html');
@@ -65,7 +64,7 @@ let checkAndShoot = (res, shootUri) => {
   let href = decodeURI(shootUri.href)
   console.log('shoot ' + href)
 
-  request(href, (error, response, body) => {
+  request({uri: href, jar: true}, (error, response, body) => {
     if (error) {
       res.statusCode = 400;
       res.setHeader('Content-Type', 'text/plain');

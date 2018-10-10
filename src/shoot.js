@@ -73,7 +73,6 @@ let a = async () => {
     if (!browser) {
       browser = await puppeteer.launch() // lance un vrai process chromium, puis s'y connecte
     }
-
     browserLastPageDate = Date()
     const pageDesktop = await browser.newPage();
     await pageDesktop.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36')
